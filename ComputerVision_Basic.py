@@ -58,6 +58,7 @@ arucoDict = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_100)
 
 def detect_marker(img):
     angle = []
+    
 ##    # Perform binarization to enhance ability to locate corners correctly
 ##    _, binary_img = cv.threshold(src=img, maxval=255,
 ##                                 type=cv.THRESH_OTSU, thresh=0)
@@ -65,8 +66,8 @@ def detect_marker(img):
 ##    cv.imshow("thresh_otsu", binary_img)
 ##    cv.waitKey(0)
 
-    #binary_img = cv.adaptiveThreshold(img, 255, cv.ADAPTIVE_THRESH
-    corners, ids, _ = cv.aruco.detectMarkers(image=img, dictionary=arucoDict)
+    corners, ids, rejectedCorners = cv.aruco.detectMarkers(image=img, dictionary=arucoDict, cameraMatrix=K, distCoeff=DIST_COEFFS)                                   
+
     img = cv.cvtColor(img, cv.COLOR_GRAY2BGR)
     
     if ids is not None:
