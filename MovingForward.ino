@@ -27,14 +27,17 @@ float linearPositionL;
 float angularPositionR; 
 float linearPositionR;
 float radPerCount;
-float circumference;
+float circumference; 
+float speedR;   // Built-in variable for the speed of the motor (Right), Between -400, 400
+float speedL;   // Built-in variable for the speed of the motor (Left), Between -400, 400
+float motorVoltageR;    
+float motorVoltageL;
 
 int aWriteL;
 int aWriteR;
 
 static float uR; // Output gain of the PI controller for the Right wheel 
 static float uL; // Output gain of the PI controller for the Left wheel 
-// NOTE: Since we're only moving forwards here, uR = uL
 
 void setup() {   
   
@@ -73,17 +76,17 @@ void loop() {
     }                                                                                // to allow for easy reset w/o resetting
     oldPositionL = newPositionL;                                                       // position variables. 
     //Serial.println(newPosition);  
-    Serial.print(angularPositionL);
-    Serial.print("  ");
+    //Serial.print(angularPositionL);
+    //Serial.print("  ");
   }   
 
   if (newPositionR != oldPositionR) {   
     if (oldPositionR != -999) {    // Makes sure angularPosition isn't calculated using the initial value for oldPosition
       angularPositionR = angularPositionR + (newPositionR - oldPositionR) * radPerCount; // Calculated based on position diff. 
-    }                                                                                // to allow for easy reset w/o resetting
-    oldPositionL = newPositionR;                                                       // position variables. 
+    }                                                                                    // to allow for easy reset w/o resetting
+    oldPositionL = newPositionR;                                                         // position variables. 
     //Serial.println(newPosition);  
-    Serial.println(angularPositionR);
+    //Serial.println(angularPositionR);
   } 
 
    // Mechanism for resetting the positions to zero
@@ -95,7 +98,19 @@ void loop() {
 
   // Calculating linear position based on angular positions:
   linearPositionL = angularPositionL * circumference / (float) (2*PI);
-  linearPositionR = angularPositionR * circumference / (float) (2*PI);
+  linearPositionR = angularPositionR * circumference / (float) (2*PI);  
+
+  motorVoltageL = speedL * ( (float) 7 / (float) 400 ); 
+  motorVoltageR = speedR * ( (float) 7 / (float) 400 );
+
+  
+  Serial.println(linearPositionL); 
+  Serial.print("     ");
+  Serial.print(motorVoltageL);
+
+  Serial.println(linearPositionR);
+  Serial.print("     ");
+  Serial.print(motorVoltageR);
 
   //***************************************************************
   //***     Calculating & Driving Motors Based on Control Sys.  *** 
