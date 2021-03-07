@@ -85,9 +85,9 @@ def detect_marker(img):
 
         tag_center_x = get_center_xval(corners)
         
-        distance, tm_c, img_marked, disp_img = get_distance(corners, img)
+        distance, angle_rad, angle_deg, img_marked, disp_img = get_distance(corners, img)
         
-        angle_deg, angle_rad = get_angle(tag_center_x)
+        #angle_deg, angle_rad = get_angle(tag_center_x)
 
         cv.imshow("Marker Detected", disp_img)
         cv.waitKey(0)
@@ -179,16 +179,16 @@ def get_distance(corners, img):
 
     # Unpack translation vector
     t_vec = tvecs[0][0]
-    print("t_vec: ", t_vec)
+    #print("t_vec: ", t_vec)
     
     distance = math.sqrt(t_vec[0] ** 2 + t_vec[2] ** 2)
     print("distance: ", round(distance, 2), "inches")
 
-    tan_angle_rad = np.arctan(t_vec[0] / t_vec[2])
-    tan_angle_rad = - tan_angle_rad
-    tan_angle_deg = tan_angle_rad * 180 / math.pi
-    print("tan_angle: ", round(tan_angle_deg, 2), "degrees;     ",
-          round(tan_angle_rad, 2), "radians")
+    angle_rad = np.arctan(t_vec[0] / t_vec[2])
+    angle_rad = - angle_rad
+    angle_deg = angle_rad * 180 / math.pi
+    print("angle: ", round(angle_deg, 2), "degrees;     ",
+          round(angle_rad, 2), "radians")
 
     scale = 0.5
     disp_img = cv.resize(img, (int(img.shape[1] * scale),
@@ -205,7 +205,7 @@ def get_distance(corners, img):
 ##    print("distance: ", round(distance, 2), "inches")
     
     
-    return distance, t_vec, img, disp_img
+    return distance, angle_rad, angle_deg, img, disp_img
 
 
 if __name__ == '__main__':
