@@ -1,11 +1,19 @@
 
 
-// Thomas Klinedinst    EENG 350    3 5 2021 
+// Thomas Klinedinst    EENG 350    3 10 2021 
 // This program is designed to make the robot move forwards a set number of inches
 // based on the number of rotary encoder counts and the circumference of the 
 // wheel. 
 
+<<<<<<< Updated upstream
 // In this case, the desired distance is hard-coded in the #define goalDistance statement
+=======
+<<<<<<< HEAD
+// In this case, the desired distance is hard-coded from the serial monitor. 
+=======
+// In this case, the desired distance is hard-coded in the #define goalDistance statement
+>>>>>>> 1b9cfe5fb3c7e724bf10ba58e142dd72e0b6bcad
+>>>>>>> Stashed changes
 
 #include <Encoder.h>
 #include <DualMC33926MotorShield.h>
@@ -126,5 +134,27 @@ void loop() {
   //***************************************************************
   //***     Calculating & Driving Motors Based on Control Sys.  *** 
   //***************************************************************
+
+  if (linearPositionL < 5) { 
+    speedL = 100;
+  } 
+
+  else if (linearPositionL >= 5) { 
+    speedL = 0;
+  }
+
+  if (linearPositionR < 5) { 
+    speedR = -100;
+  } 
+
+  else if (linearPositionR >= 5) { 
+    speedR = 0;
+  } 
+
+  md.setM1Speed(speedL);
+  md.setM2Speed(speedR);
+
+  
+  
 
 }
