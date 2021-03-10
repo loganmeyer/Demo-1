@@ -41,8 +41,6 @@ float speedL;   // Built-in variable for the speed of the motor (Left), Between 
 float motorVoltageR;    
 float motorVoltageL;
 
-int aWriteL;
-int aWriteR; 
 static float uR; // Output gain of the PI controller for the Right wheel 
 static float uL; // Output gain of the PI controller for the Left wheel 
 
