@@ -5,7 +5,7 @@
 // based on the number of rotary encoder counts and the circumference of the 
 // wheel. 
 
-// In this case, the desired distance is input from the serial monitor. 
+// In this case, the desired distance is hard-coded in the #define goalDistance statement
 
 #include <Encoder.h>
 #include <DualMC33926MotorShield.h>
