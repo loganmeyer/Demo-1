@@ -10,17 +10,17 @@
 #include <Encoder.h>
 #include <DualMC33926MotorShield.h>
 
-#define diameter 0.5 // Diameter of the wheel, in ft
+#define diameter          0.5 // Diameter of the wheel, in ft
 #define countsPerRotation 3200 
+#define motorRPWM         10
+#define motorLPWM         9 
+#define voltageRDir       7   // Direction for Left motor
+#define voltageLDir       8   // Direction for Right motor
+#define pinD2             4  
+#define goalDistance      5     // Linear goal distance in feet (CHANGE PER RUN)
 
-Encoder leftWheel(2,1); // 2 is an interrupt pin (A Right)
-Encoder rightWheel(3,6); // 3 is an interrupt pin (A Left)
-
-#define motorLPWM         9
-#define motorRPWM         10 
-#define voltageLDir       7   // Direction for Left motor
-#define voltageRDir       8   // Direction for Right motor
-#define pinD2             4 
+Encoder rightWheel(2,5);  // 2 is an interrupt pin (A/ Yellow Right)    ***DON'T USE PIN 1***
+Encoder leftWheel(3,6);   // 3 is an interrupt pin (A/ Yellow Left)   
 
 float angularPositionL;
 float linearPositionL;
@@ -34,21 +34,23 @@ float motorVoltageR;
 float motorVoltageL;
 
 int aWriteL;
-int aWriteR;
-
+int aWriteR; 
 static float uR; // Output gain of the PI controller for the Right wheel 
 static float uL; // Output gain of the PI controller for the Left wheel 
 
+DualMC33926MotorShield md;
+
 void setup() {   
   
-  circumference = PI * diameter; // Calculates wheel circumference in ft
-
-  DualMC33926MotorShield(); // Configures the motor shield pin outputs based on 
-                            // pins shown in "DualMC33926MotorShield.cpp"
-
+  circumference = (float) PI * diameter; // Calculates wheel circumference in ft
+  md.init(); // Configures the motor shield pin outputs based on pins shown in "DualMC33926MotorShield.cpp"
+    
   Serial.begin(9600); 
   Serial.println ("Straight line test");
   Serial.println ("Press r to reset the angular position"); 
+  Serial.print ("The robot will drive forwards ");  
+  Serial.print(goalDistance);
+  Serial.println(" ft");
 
   // Determining the scaling to convert position to angular position in radians
   // 80 counts per rotation = 80 counts / 2pi rad
@@ -56,10 +58,9 @@ void setup() {
   
 }
 
-
 long oldPositionL  = -999;   // Included in the provided Basic encoder example code
 long oldPositionR  = -999;    
- 
+
 void loop() {
   // put your main code here, to run repeatedly:
 
@@ -69,13 +70,15 @@ void loop() {
 
   long newPositionL = leftWheel.read(); 
   long newPositionR = rightWheel.read(); 
-  
-  if (newPositionL != oldPositionR) {   
+//  Serial.print(leftWheel.read());
+//  Serial.print("  ");
+//  Serial.println(rightWheel.read());
+  if (newPositionL != oldPositionL) {   
     if (oldPositionL != -999) {    // Makes sure angularPosition isn't calculated using the initial value for oldPosition
       angularPositionL = angularPositionL + (newPositionL - oldPositionL) * radPerCount; // Calculated based on position diff. 
     }                                                                                // to allow for easy reset w/o resetting
     oldPositionL = newPositionL;                                                       // position variables. 
-    //Serial.println(newPosition);  
+    //Serial.println(newPositionL);  
     //Serial.print(angularPositionL);
     //Serial.print("  ");
   }   
@@ -84,8 +87,8 @@ void loop() {
     if (oldPositionR != -999) {    // Makes sure angularPosition isn't calculated using the initial value for oldPosition
       angularPositionR = angularPositionR + (newPositionR - oldPositionR) * radPerCount; // Calculated based on position diff. 
     }                                                                                    // to allow for easy reset w/o resetting
-    oldPositionL = newPositionR;                                                         // position variables. 
-    //Serial.println(newPosition);  
+    oldPositionR = newPositionR;                                                         // position variables. 
+    //Serial.println(newPositionR);  
     //Serial.println(angularPositionR);
   } 
 
@@ -97,20 +100,28 @@ void loop() {
   } 
 
   // Calculating linear position based on angular positions:
-  linearPositionL = angularPositionL * circumference / (float) (2*PI);
-  linearPositionR = angularPositionR * circumference / (float) (2*PI);  
+  linearPositionL = -( angularPositionL * circumference / (float) (2*PI) );   // Negative just to account for the proper direction
+  linearPositionR = ( angularPositionR * circumference / (float) (2*PI) );  
 
   motorVoltageL = speedL * ( (float) 7 / (float) 400 ); 
   motorVoltageR = speedR * ( (float) 7 / (float) 400 );
 
-  
-  Serial.println(linearPositionL); 
-  Serial.print("     ");
+  Serial.print("LinearPositionL: ");
+  Serial.print(linearPositionL);  
+  Serial.print("   motorVoltageL: ");
   Serial.print(motorVoltageL);
 
-  Serial.println(linearPositionR);
-  Serial.print("     ");
-  Serial.print(motorVoltageR);
+  Serial.print(" LinearPositionR: ");
+  Serial.print(linearPositionR);
+  Serial.print("   motorVoltageR: ");
+  Serial.println(motorVoltageR);
+
+//  Serial.print(" AngularPositionL: ");
+//  Serial.print(angularPositionL);
+//  
+//  Serial.print(" AngularPositionR: ");
+//  Serial.print(angularPositionR);
+//  
 
   //***************************************************************
   //***     Calculating & Driving Motors Based on Control Sys.  *** 
