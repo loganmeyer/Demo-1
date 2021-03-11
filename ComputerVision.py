@@ -60,8 +60,6 @@ P_M = np.array([MARKER_LENGTH_IN / 2, -MARKER_LENGTH_IN / 2, 0, 1])
 arucoDict = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_100)
 
 def detect_marker(img):
-    angle = []
-
     corners, ids, rejectedCorners = cv.aruco.detectMarkers(image=img, dictionary=arucoDict, cameraMatrix=K, distCoeff=DIST_COEFFS)                                   
 
     img = cv.cvtColor(img, cv.COLOR_GRAY2BGR)
@@ -74,16 +72,12 @@ def detect_marker(img):
                                          ids=ids,
                                          borderColor=(0, 0, 255)
                                          )
-            
-
-        tag_center_x = get_center_xval(corners)
-        
+                    
         distance, angle_rad, angle_deg, img_marked, disp_img = get_distance(corners, img)
         
-        #angle_deg, angle_rad = get_angle(tag_center_x)
-
-        cv.imshow("Marker Detected", disp_img)
-        cv.waitKey(0)
+##        cv.imshow("Stream", disp_img)
+##        cv.waitKey(1)
+##        cv.destroyWindow("Stream")
 
     if ids is None:
         print("Marker not detected")
@@ -91,26 +85,22 @@ def detect_marker(img):
         angle_rad = 0
         distance = 0
         
-        scale = 0.5
+        scale = 0.25
         disp_img = cv.resize(img, (int(img.shape[1] * scale),
                                    int(img.shape[0] * scale)
                                    ))
-        cv.imshow("No Marker", disp_img)
-        cv.waitKey(0)
+        
+##        cv.imshow("Stream", disp_img)
+##        cv.waitKey(1)
+##        cv.destroyWindow("Stream")
         
     return distance, angle_deg, angle_rad, img
 
+def adjust_zero_angle():
+    detected_angle_at_zero = -0.17
+    zero_angle = - detected_angle_at_zero
 
-def get_center_xval(corners):
-    sum_x = 0
-    sum_y = 0
-    for i in range(4):
-        sum_x = sum_x + corners[0][0][i, 0]
-        sum_y = sum_y + corners[0][0][i, 1]
-    ave_x = sum_x / 4
-    ave_y = sum_y / 4
-    
-    return ave_x
+    return zero_angle
 
 
 def get_angle(x):
@@ -147,7 +137,7 @@ def get_distance(corners, img):
     print("angle: ", round(angle_deg, 2), "degrees;     ",
           round(angle_rad, 2), "radians")
 
-    scale = 0.5
+    scale = 0.25
     disp_img = cv.resize(img, (int(img.shape[1] * scale),
                                int(img.shape[0] * scale)
                                )) 
