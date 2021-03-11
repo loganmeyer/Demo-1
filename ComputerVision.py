@@ -61,13 +61,6 @@ arucoDict = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_100)
 
 def detect_marker(img):
     angle = []
-    
-##    # Perform binarization to enhance ability to locate corners correctly
-##    _, binary_img = cv.threshold(src=img, maxval=255,
-##                                 type=cv.THRESH_OTSU, thresh=0)
-##    
-##    cv.imshow("thresh_otsu", binary_img)
-##    cv.waitKey(0)
 
     corners, ids, rejectedCorners = cv.aruco.detectMarkers(image=img, dictionary=arucoDict, cameraMatrix=K, distCoeff=DIST_COEFFS)                                   
 
@@ -107,6 +100,7 @@ def detect_marker(img):
         
     return distance, angle_deg, angle_rad, img
 
+
 def get_center_xval(corners):
     sum_x = 0
     sum_y = 0
@@ -117,6 +111,7 @@ def get_center_xval(corners):
     ave_y = sum_y / 4
     
     return ave_x
+
 
 def get_angle(x):
     rel_x = abs(Cx - x)
@@ -131,55 +126,17 @@ def get_angle(x):
           round(angle_rad, 2), "radians")
     return angle_deg, angle_rad
 
-def inversePerspective(rvec, tvec):
-    R, _ = cv.Rodrigues(rvec)
-    R = np.matrix(R).T
-    invTvec = np.dot(-R, np.matrix(tvec))
-    invRvec, _ = cv.Rodrigues(R)
-    return invRvec, invTvec
 
 def get_distance(corners, img):
-##    print("k: ", K)
-##    print("dist: ", DIST_COEFFS)
     rvecs, tvecs, _ = cv.aruco.estimatePoseSingleMarkers(
         corners,
         markerLength = MARKER_LENGTH_IN,
         cameraMatrix = K,
         distCoeffs = DIST_COEFFS
         )
-    #print("rvecs: ", rvecs)
-##    print("tvecs: ", tvecs)
-##    # Unpack vectors
-##    rvec_m_c = rvecs[0]
-##    tm_c = tvecs[0]
-##    # Use function to draw axis on Aruco marker
-##    cv.aruco.drawAxis(image=img, cameraMatrix=K, distCoeffs=DIST_COEFFS,
-##                      rvec=rvec_m_c, tvec=tm_c, length=MARKER_LENGTH_IN)
-##
-##    rvec1, tvec1 = rvecs.reshape((3, 1)), tvecs.reshape((3, 1))
-##    #print("rvec1: ", round(rvec1, 2))
-##
-##    # Invert vectors
-##    invRvec, invTvec = inversePerspective(rvec1, tvec1)
-##
-##    #print("invRvec: ", invRvec)
-##    print("invTvec: ", invTvec)
-##
-##    invDistance = math.sqrt(invTvec[0] ** 2 + invTvec[2] ** 2)
-##    print("invDistance: ", round(invDistance, 2))
-##
-##    #invAngle = np.arctan(invTvec[1] / invTvec[0])
-##    invAngle = np.arctan(invTvec[0] / invTvec[2])
-##    invAngle = invAngle[0][0]
-##    invAngle = float(invAngle)
-##
-##    invAngle_deg = invAngle * 180 / math.pi
-##    print("invAngle: ", round(invAngle_deg, 2), "degrees;     ",
-##          round(invAngle, 2), "radians")
 
     # Unpack translation vector
     t_vec = tvecs[0][0]
-    #print("t_vec: ", t_vec)
     
     distance = math.sqrt(t_vec[0] ** 2 + t_vec[2] ** 2)
     print("distance: ", round(distance, 2), "inches")
@@ -193,17 +150,7 @@ def get_distance(corners, img):
     scale = 0.5
     disp_img = cv.resize(img, (int(img.shape[1] * scale),
                                int(img.shape[0] * scale)
-                               ))
-    
-
-##    cv.imshow("img with axis", disp_img)
-##    cv.waitKey(0)
-
-    # Calculate distance using the root of the sum of the squares from the
-    # translation vector
-##    distance = math.sqrt(tm_c[0][0] ** 2 + tm_c[0][2] ** 2)
-##    print("distance: ", round(distance, 2), "inches")
-    
+                               )) 
     
     return distance, angle_rad, angle_deg, img, disp_img
 
@@ -214,7 +161,7 @@ if __name__ == '__main__':
     #camera.framerate = 15
 
     with picamera.array.PiRGBArray(camera) as stream:
-        #while time.time() < t_minus_x_seconds:
+        while True:
             camera.capture(stream, format="bgr")
             img = stream.array
 
