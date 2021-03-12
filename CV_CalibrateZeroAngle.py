@@ -180,7 +180,7 @@ if __name__ == '__main__':
                     print("sum_angles = ", sum_angles)
                 avg_zero_angle = sum_angles / (CALIBRATE_IMG_COUNT)
                 print("Calibration zero angle = ", avg_zero_angle)
-                np.savez("zero_angle.npz", zero_angle=avg_zero_angle)
+                np.savez("CV_ZeroAngle.npz", zero_angle=avg_zero_angle)
                 break;
             count = count + 1
 

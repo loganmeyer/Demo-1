@@ -26,7 +26,7 @@ import math
 
 # FOR ZERO ANGLE CALIBRATION
 USE_CALIB_ANGLE = False
-CALIB_ANGLE_FILE = np.load('zero_angle.npz')
+CALIB_ANGLE_FILE = np.load('CV_ZeroAngle.npz')
 CALIB_ANGLE = - CALIB_ANGLE_FILE['zero_angle']
 
 
@@ -54,7 +54,7 @@ SCALE = 0.25
 
 # Load camera properties matrices from file
 # This file is generated from the camera calibration
-KD = np.load('cam_matrices_charuco.npz')
+KD = np.load('CV_CameraCalibrationMatrices.npz')
 K = KD['k']
 DIST_COEFFS = KD['dist']
 
