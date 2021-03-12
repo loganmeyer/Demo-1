@@ -5,6 +5,7 @@ Z_dist = input("Z distance (in): ")
 X_dist = input("X distance (in): ")
 
 Z = float(Z_dist)
+Z = Z + 1.5 / 16
 X = float(X_dist)
 
 dist = math.sqrt(Z ** 2 + X ** 2)

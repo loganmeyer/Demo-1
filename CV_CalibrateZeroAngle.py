@@ -25,15 +25,9 @@ import numpy as np
 import math
 
 # FOR ZERO ANGLE CALIBRATION
-USE_CALIB_ANGLE = False
-CALIB_ANGLE_FILE = np.load('zero_angle.npz')
-CALIB_ANGLE = - CALIB_ANGLE_FILE['zero_angle']
+CALIBRATE_ZERO_ANGLE = True
+CALIBRATE_IMG_COUNT = 5
 
-
-# TO DISPLAY STREAM IMAGES
-DISP_IMGS = False
-# Amount of time to display images (ms)
-WAIT_KEY = 5000
 
 # Initialize camera
 camera = PiCamera()
@@ -73,14 +67,13 @@ DIST_COEFFS = KD['dist']
 ##DIST_COEFFS = 0
 
 
-def detect_marker(img):
-    # Detect Aruco markers, corners, and IDs
+def detect_marker(img, calibrate, calib_angle):
     corners, ids, rejectedCorners = cv.aruco.detectMarkers(image=img,
                                                            dictionary=arucoDict,
                                                            cameraMatrix=K,
                                                            distCoeff=DIST_COEFFS
                                                            )                                   
-    # Convert image to color
+
     img = cv.cvtColor(img, cv.COLOR_GRAY2BGR)
 
     # If an Aruco marker is detected
@@ -95,6 +88,15 @@ def detect_marker(img):
                     
         distance, angle_rad, angle_deg = get_vals(corners)
 
+##        # RESIZE AND DISPLAY THE IMAGE
+##        disp_img = cv.resize(img_marked, (int(img_marked.shape[1] * SCALE),
+##                             int(img_marked.shape[0] * SCALE))
+##                             )
+##        
+##        cv.imshow("Stream", disp_img)
+##        cv.waitKey(1)
+##        cv.destroyWindow("Stream")
+
     # If an Aruco marker is not detected
     if ids is None:
         print("Marker not detected")
@@ -103,16 +105,23 @@ def detect_marker(img):
         angle_rad = 0
         distance = 0
 
-    # Resize image for smaller display size
-    disp_img = cv.resize(img, (int(img.shape[1] * SCALE),
-                               int(img.shape[0] * SCALE)
-                               ))
+##        # RESIZE AND DISPLAY THE IMAGE
+##        disp_img = cv.resize(img, (int(img.shape[1] * SCALE),
+##                                   int(img.shape[0] * SCALE)
+##                                   ))
+##
+##        cv.imshow("Stream", disp_img)
+##        cv.waitKey(1)
+##        cv.destroyWindow("Stream")
 
-    return distance, angle_deg, angle_rad, disp_img
+    # Code for calibrating zero angle
+    if calibrate is True:
+        calib_angle.append(angle_rad)
+        
+    return distance, angle_deg, angle_rad, calib_angle, img
 
 
 def get_vals(corners):
-    # Get rotation and translation vectors for Aruco marker
     rvecs, tvecs, _ = cv.aruco.estimatePoseSingleMarkers(
         corners,
         markerLength = MARKER_LENGTH_IN,
@@ -131,11 +140,10 @@ def get_vals(corners):
     # Calculate angle using trigonometry with distance values
     angle_rad = np.arctan(t_vec[0] / t_vec[2])
     angle_rad = - angle_rad
-    if USE_CALIB_ANGLE is True:
-        angle_rad = angle_rad + CALIB_ANGLE
     angle_deg = angle_rad * 180 / math.pi
     print("angle: ", round(angle_deg, 2), "degrees;     ",
           round(angle_rad, 2), "radians")
+
     
     return distance, angle_rad, angle_deg
 
@@ -143,23 +151,39 @@ def get_vals(corners):
 if __name__ == '__main__':
     camera.resolution = (WIDTH, HEIGHT)
 
+    # Set this true to calibrate the angle for zero degrees
+    zero_angles = []
+    sum_angles = 0
+    count = 0
+
     with picamera.array.PiRGBArray(camera) as stream:
         while True:
             camera.capture(stream, format="bgr")
             img = stream.array
 
-            # Convert to grayscale for Aruco detection
             gray_img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-            
-            # Detect Aruco marker, and get detected angle and distance
-            distance, angle_deg, angle_rad, disp_img = detect_marker(gray_img)
 
-            # Optional display stream images
-            if DISP_IMGS is True:
-                cv.imshow("Stream", disp_img)
-                cv.waitKey(WAIT_KEY)
-                cv.destroyWindow("Stream")
+            distance, angle_deg, angle_rad, zero_angles, img_mark = detect_marker(gray_img,
+                                     CALIBRATE_ZERO_ANGLE,
+                                     zero_angles
+                                     )
             
             # Truncate the stream to clear for next image capture
             stream.truncate(0)
-            
+
+            # Capture only ten images for angle calibration
+            print("count: ", count)
+            if CALIBRATE_ZERO_ANGLE is True and count == CALIBRATE_IMG_COUNT-1:
+                print("zero_angles[] = ", zero_angles)
+                for i in range(CALIBRATE_IMG_COUNT):
+                    sum_angles = sum_angles + zero_angles[i]
+                    print("sum_angles = ", sum_angles)
+                avg_zero_angle = sum_angles / (CALIBRATE_IMG_COUNT)
+                print("Calibration zero angle = ", avg_zero_angle)
+                np.savez("zero_angle.npz", zero_angle=avg_zero_angle)
+                break;
+            count = count + 1
+
+    cv.destroyAllWindows()
+
+
