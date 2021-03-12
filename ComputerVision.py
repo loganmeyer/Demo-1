@@ -33,6 +33,9 @@ captured. The amount of time each image is visible can be adjusted by changing
 the WAIT_KEY value. This number is in milliseconds. It also affects the actual
 capture rate of the images in the stream, if set to 'True'.
 
+This program runs continuously. To exit, make sure the selected window is the
+running Python Shell, and press ctrl+C.
+
 
 OUTPUTS:
 The detected angles from the camera to the Aruco marker are given in degrees
@@ -62,9 +65,11 @@ CALIB_ANGLE = - CALIB_ANGLE_FILE['zero_angle']
 
 
 # TO DISPLAY STREAM IMAGES
-DISP_IMGS = False
+DISP_IMGS = True
 # Amount of time to display images (ms)
 WAIT_KEY = 5000
+# Scale for resizing images for display
+SCALE = 0.5
 
 # Initialize camera
 camera = PiCamera()
@@ -79,9 +84,6 @@ MARKER_LENGTH_IN = 3.8125
 # Max res: 3280 x 2464
 WIDTH = 3264
 HEIGHT = 2464
-
-# Scale for resizing images for display
-SCALE = 0.25
 
 # Load camera properties matrices from file
 # This file is generated from the camera calibration
@@ -106,11 +108,11 @@ DIST_COEFFS = KD['dist']
 
 def detect_marker(img):
     # Detect Aruco markers, corners, and IDs
-    corners, ids, rejectedCorners = cv.aruco.detectMarkers(image=img,
-                                                           dictionary=arucoDict,
-                                                           cameraMatrix=K,
-                                                           distCoeff=DIST_COEFFS
-                                                           )                                   
+    corners, ids, _ = cv.aruco.detectMarkers(image=img,
+                                             dictionary=arucoDict,
+                                             cameraMatrix=K,
+                                             distCoeff=DIST_COEFFS
+                                             )                                   
     # Convert image to color
     img = cv.cvtColor(img, cv.COLOR_GRAY2BGR)
 
@@ -174,7 +176,9 @@ def get_vals(corners):
 if __name__ == '__main__':
     camera.resolution = (WIDTH, HEIGHT)
 
+    # Set up picamera array
     with picamera.array.PiRGBArray(camera) as stream:
+        # Run capture stream continuously
         while True:
             camera.capture(stream, format="bgr")
             img = stream.array
