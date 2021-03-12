@@ -1,5 +1,20 @@
 # Demo-1 
-dual-mc33926-motor-shield-master.zip: Arduino library containing built-in functions for driving and initializing the motor driver shield. 
+SEED Lab Demo-1 - Group 007
+
+__Purpose of Repository__
+This repository contains two sets of programs relating to computer vision, and robot movement:
+
+Computer Vision: The computer vision programs use a Raspberry Pi. The main computer vision file uses a picamera to detect an Aruco marker within a 10' x 10' space,
+and determines the angle from the center line of the camera to the Aruco marker, in addition to the distance from the picamera to the Aruco marker. This program runs
+and detects continuously. This portion also contains files to generate the camera calibration matrices for use in the main file, and optional zero angle calibration files
+to improve detected angle from a given camera position.
+
+Robot Movement:
+
+
+
+__File Organization__
++dual-mc33926-motor-shield-master.zip: Arduino library containing built-in functions for driving and initializing the motor driver shield. 
 
 Encoder-1.4.1.zip: Arduino library containing built-in Arduino functions for reading the encoders 
 
