@@ -1,16 +1,41 @@
 #!/usr/bin/env python
-"""Mini-Project for SEED Lab: Group 007.
+"""CV Zero Angle Calibration module for Demo-1. DEED Lab: Group 007.
 
-Requires install of numpy, picamera, time, and opencv. 
-Built for Arducam OV5647.
+REQUIREMENTS AND COMPATIBILITY:
+Required install of numpy, picamera, time, math, and opencv.
+Built for Raspberry Pi Camera Module V2, but should work with other 
 
-This program uses computer vision techniques and opencv to capture a stream of
-images, and performs resize, and convert to gray operations, before detecting
-Aruco Markers and the quadrant at which they appear in.
+PURPOSE:
+This file gets zero angle calibration to compensate for the initial zero angle
+of the camera if the camera is pointed slightly off the z-axis. It increases
+accuracy for angle detection.
 
-See 'README.md' for more details and instructions.
-If you make changes to this file, make sure to update the shared repo;
-you may use the instructions included in "raspi_git_instructions.txt"
+METHODS:
+The Aruco marker should be positioned centered in front of the camera anywhere
+within ten feet. The program generates the mesasured angle to the marker a
+number of times using computer vision techniques, gets the average angle, and
+outputs it to 'CV_ZeroAngle.npz'. This angle can then be used to zero out the
+angles for the current camera position in 'ComputerVision.py', thus increasing
+detected angle accuracy, and preventing error from minor camera tilt around its
+y-axis.
+
+INSTRUCTIONS:
+Aim the camera down a straight line and center an Aruco marker on the same
+line. You may select the number of calibration images using the global variable
+'CALIBRATE_IMG_COUNT' depending on available calibration time, and desired
+accuracy. A number between 5 and 15 is recommended. Simply run the program and
+it will automatically save the zero calibration angle to 'CV_ZeroAngle.npz'. To
+use this calibration angle with 'ComputerVision.py' after this program is run,
+simply open 'ComputerVision.py' and set the global variable 'USE_CALIB_ANGLE'
+to 'True'. This will automatically import the value from the file and use it
+to calibrate future runs of the program. Make sure that 'USE_CALIB_ANGLE' is
+set to 'False' if the camera has been moved since the last run of this program,
+or run this program again to calibrate.
+
+OUTPUTS:
+The detected calibration zero angle from this program is automatically saved to
+'CV_ZeroAngle.npz' in the project directory. That file is updated and
+overwritten each time this program is run.
 """
 
 __author__ = "Jack Woolery"

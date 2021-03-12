@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 """Computer Vision module for Demo-1. SEED Lab: Group 007.
 
+REQUIREMENTS AND COMPATIBILITY:
 Requires install of numpy, picamera, time, math, and opencv. 
-Built for Raspberry Pi Camera Module v2.
+Built for Raspberry Pi Camera Module v2, but works with other picameras.
 
 This file uses essential camera calibration matrices from the
 'CV_CameraCalibrationMatrices.npz' file created by 'CV_CameraCalibration.py',
@@ -12,6 +13,7 @@ calibration matrices need to be updated using the respective file for any new
 camera, and the zero angle value needs to be updated any time you reposition
 the camera.
 
+PURPOSE AND METHODS:
 This program uses computer vision techniques and opencv to capture a stream of
 images and detect Aruco markers. Opencv tequniques are used to get the
 translation vector to the Aruco marker. X, Y, Z values from the translation
@@ -20,7 +22,6 @@ angle from the camera to the marker using trigonometry and math functions.
 
 
 INSTRUCTIONS:
-For the designated Group 007 picamera, 
 Set the global variable 'USE_CALIB_ANGLE' to 'True' in order to use the zero
 angle calibration. The zero angle calibration should be performed every time
 you move the camera module. The calibration angle can be updated using the file
