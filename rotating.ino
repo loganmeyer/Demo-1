@@ -10,8 +10,8 @@
 
 #define diameter          0.5 // Diameter of the wheel, in ft 
 #define wheelRadius       0.25  
-#define wheelbase         1.18  // Wheelbase, in ft 
-#define turnRadius        0.59  // Half of the wheelbase (VERIFY)
+#define wheelbase         1.167  // Wheelbase, in ft (Logan measured 1.166666)
+#define turnRadius        0.584  // Half of the wheelbase (VERIFY)
 #define countsPerRotation 3200 
 #define motorRPWM         10
 #define motorLPWM         9 
