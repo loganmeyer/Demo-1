@@ -1,0 +1,203 @@
+// Thomas Klinedinst    EENG 350    3 10 2021 
+// This program is designed to make the robot rotate a set number of degrees
+// from a reference image, based on the rotation of each individual motor. 
+
+// In this case, the desired angle is hard coded
+
+#include <Encoder.h>
+#include <DualMC33926MotorShield.h>
+
+
+#define countsPerRotation 3200 
+#define motorRPWM         10
+#define motorLPWM         9 
+#define voltageRDir       7   // Direction for Left motor
+#define voltageLDir       8   // Direction for Right motor
+#define pinD2             4  
+    //Desired distance in feet
+#define ifspin            1      //This is set to 0 or one depeding on ifspin ifspintherobot
+
+#define goalAngle 3.14159     // Desired angle of rotation, in degrees (CHANGE PER RUN) *** POSITIVE INDICATES ROBOT NEETS TO ROTATE CCW *** 
+#define goalDistance 5
+#define diameter 0.5 // Diameter of the wheel, in ft 
+#define wheelRadius  0.25
+#define wheelbase  1.167  // Wheelbase, in ft (Logan measured 1.166666)
+#define turnRadius  0.584  // Half of the wheelbase (VERIFY)
+
+float angularPositionL;
+float linearPositionL;
+float angularPositionR; 
+float linearPositionR;
+float radPerCount;
+float circumference; 
+float speedR = 355;   // Built-in variable for the speed of the motor (Right), Between -400, 400
+float speedL = 355;   // Built-in variable for the speed of the motor (Left), Between -400, 400
+/////control sytem variables here
+//kp and ki values for each of the motors to account for lagging motor.
+float KpL = 0.64; // 0.64;
+float KiL = 0.0001; //0.0001;
+float KpR = 0.64; // 0.64;
+float KiR = 0.0001; //0.0001;
+int delayValue = 50;
+
+
+
+
+
+//converted values for goal distance and truning angle
+float goalDistanceAngle = -1*goalDistance*2/diameter;
+float goalAngleAngle = wheelbase*3.14159/diameter;
+////////
+  ///static control variables
+  float rL, rR, yL, yR, eL, eR;
+  int IL = 0;
+  int IR = 0;
+  int Ts = 0;
+  int Tc = 0;
+  
+
+
+Encoder rightWheel(2,5);  // 2 is an interrupt pin (A/ Yellow Right)    ***DON'T USE PIN 1***
+Encoder leftWheel(3,6);   // 3 is an interrupt pin (A/ Yellow Left) 
+DualMC33926MotorShield md;
+
+void setup() {   
+  
+  circumference = (float) PI * diameter; // Calculates wheel circumference in ft
+  md.init(); // Configures the motor shield pin outputs based on pins shown in "DualMC33926MotorShield.cpp"
+    
+  Serial.begin(9600); 
+  Serial.println ("Rotating Test");
+  Serial.println ("Press r to reset the angular position"); 
+  Serial.print ("The robot will turn now:  ");  
+  Serial.print(goalAngle);
+  Serial.println(" degrees");
+
+  radPerCount = (float) 2 * (PI) / (float) countsPerRotation; 
+  
+}
+
+long oldPositionL  = -999;   // Included in the provided Basic encoder example code
+long oldPositionR  = -999;    
+
+void loop() {
+  static float uR = speedR;
+  static float uL = speedL;
+  
+  
+  //
+
+ 
+  
+  long newPositionL = leftWheel.read(); 
+  long newPositionR = rightWheel.read(); 
+  if (newPositionL != oldPositionL) {   
+    if (oldPositionL != -999) {    
+      angularPositionL = angularPositionL + (newPositionL - oldPositionL) * radPerCount;  
+    }                                                                                
+    oldPositionL = newPositionL;                                                     
+
+  }   
+
+  if (newPositionR != oldPositionR) {   
+    if (oldPositionR != -999) {    
+      angularPositionR = angularPositionR + (newPositionR - oldPositionR) * radPerCount;  
+    }                                                                                    
+    oldPositionR = newPositionR;                                                        
+
+  } 
+
+  if (Serial.read() == 'r') {   
+    angularPositionR = 0; 
+    angularPositionL = 0;
+    Serial.println("Reset angular positions");
+  } 
+
+/*
+  Serial.print(" L: ");
+  Serial.print(angularPositionL);
+  
+  Serial.print("          ||         R: ");
+  Serial.print(angularPositionR); 
+  Serial.print("\n"); 
+*/
+
+  if(ifspin == 1){
+    rL = goalAngle;
+    rR = goalAngle;
+    yL = angularPositionL*(-1);
+    yR = angularPositionR*(-1);
+
+    eL = rL-yL;
+    eR = rR-yR;
+    
+    IL = IL + Ts*eL;
+    IR = IR + Ts*eR;
+
+    uL = KpL*eL + KiL*IL;
+    uR = KpR*eR + KiR*IR;
+/*
+    if((((rL-yL))<0.2) || ((yL-rL)>0.2)){
+      uL = uL - KiL*IL;
+    }
+    if((((rR-yR))<0.2) || ((yR-rR)>0.2)){
+      uR = uR - KiR*IR;
+    }
+*/
+
+  uL = uL*(1);
+  uR = uR;
+
+  }
+  if(ifspin == 0){
+    rL = goalAngleAngle;
+    rR = goalAngleAngle;
+    yL = angularPositionL;
+    yR = angularPositionR*(-1);
+
+    eL = rL-yL;
+    eR = rR-yR;
+
+ 
+    IL = IL + Ts*eL;
+    IR = IR + Ts*eR;
+
+    uL = KpL*eL + KiL*IL;
+    uR = KpR*eR + KiR*IR;
+/*
+    if((((rL-yL))<0.2) || ((yL-rL)>0.2)){
+      uL = uL - KiL*IL;
+    }
+    if((((rR-yR))<0.2) || ((yR-rR)>0.2)){
+      uR = uR - KiR*IR;
+    }
+    */
+    uR = uR;
+
+
+    uL = uL*(-1);
+
+
+
+  }
+
+
+  Serial.print(" L: ");
+  Serial.print(uL);
+  
+  Serial.print("          ||         R: ");
+  Serial.print(uR); 
+  Serial.print("\n"); 
+ 
+
+  Ts = millis()-Tc;
+  Tc = millis();
+  delay(100 - Ts);
+  
+  md.setM1Speed(speedL*uL);
+  md.setM2Speed(speedR*uR);
+  
+
+
+ 
+}
