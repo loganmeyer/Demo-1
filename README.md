@@ -18,9 +18,11 @@ __File Organization__
 
 Encoder-1.4.1.zip: Arduino library containing built-in Arduino functions for reading the encoders 
 
-MovingForward.ino: Arduino program for moving the robot forward a set number of feet, in a straight line. ***UNFINISHED***
+MovingForward.ino: Arduino program for moving the robot forward a set number of feet, in a straight line.
 
-rotating.ino: Arduino program for rotating the robot a set number of degrees, rotating in place and then moving forwards 1 ft. ***UNFINISHED***
+rotating.ino: Arduino program for rotating the robot a set number of degrees, rotating in place and then moving forwards 1 ft.  
+
+Final Arduino Code Straight and Spin.ino: Arduino program for completing the tasks of Demo 1. Hard code the desired distance and spin for each test. 
 
 ComputerVision.py: Main Raspberry Pi program to detect an Aruoco marker, and it's angle and distance from the center of the raspberry pi camera.
 
