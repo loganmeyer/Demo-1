@@ -56,6 +56,21 @@ import time
 import cv2 as cv
 import numpy as np
 import math
+import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
+import smbus
+import busio
+import board
+
+# I2C INITIALIZATION
+bus = smbus.SMBus(1)
+i2c = busio.I2C(board.SCL, board.SDA)
+
+# LCD INITIALIZATION
+lcd_columns = 16
+lcd_rows = 2
+lcd = character_lcd.Character_LCD_RGB_I2C(i2c, lcd_columns, lcd_rows)
+lcd.clear()
+lcd.color = [100, 0, 100]
 
 # FOR ZERO ANGLE CALIBRATION
 USE_CALIB_ANGLE = False
@@ -119,6 +134,8 @@ def detect_marker(img):
     # If an Aruco marker is detected
     if ids is not None:
         print("Marker detected")
+        lcd.clear()
+        lcd.message = "Marker detected"
         for tag in ids:
             cv.aruco.drawDetectedMarkers(image=img,
                                          corners=corners,
@@ -131,6 +148,8 @@ def detect_marker(img):
     # If an Aruco marker is not detected
     if ids is None:
         print("Marker not detected")
+        lcd.clear()
+        lcd.message = "Marker not detected"
         # Return zeros
         angle_deg = 0
         angle_rad = 0
@@ -188,6 +207,7 @@ if __name__ == '__main__':
             
             # Detect Aruco marker, and get detected angle and distance
             distance, angle_deg, angle_rad, disp_img = detect_marker(gray_img)
+            lcd.message = '\n' + str(round(angle_deg, 2)) + " degrees"
 
             # Optional display stream images
             if DISP_IMGS is True:
