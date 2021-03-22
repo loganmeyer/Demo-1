@@ -22,7 +22,7 @@ MovingForward.ino: Arduino program for moving the robot forward a set number of 
 
 rotating.ino: Arduino program for rotating the robot a set number of degrees, rotating in place and then moving forwards 1 ft.  
 
-Final Arduino Code Straight and Spin.ino: Arduino program for completing the tasks of Demo 1. Hard code the desired distance and spin for each test. 
+finalDemo1Code.ino: Arduino program for completing the tasks of Demo 1. Hard code the desired distance and spin for each test, as well as if the robot is going in a straight line or doing the turning test
 
 ComputerVision.py: Main Raspberry Pi program to detect an Aruoco marker, and it's angle and distance from the center of the raspberry pi camera. The measured angle and a marker detection message is then displayed on an LCD display.
 
