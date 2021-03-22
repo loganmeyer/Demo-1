@@ -24,7 +24,7 @@ rotating.ino: Arduino program for rotating the robot a set number of degrees, ro
 
 Final Arduino Code Straight and Spin.ino: Arduino program for completing the tasks of Demo 1. Hard code the desired distance and spin for each test. 
 
-ComputerVision.py: Main Raspberry Pi program to detect an Aruoco marker, and it's angle and distance from the center of the raspberry pi camera.
+ComputerVision.py: Main Raspberry Pi program to detect an Aruoco marker, and it's angle and distance from the center of the raspberry pi camera. The measured angle and a marker detection message is then displayed on an LCD display.
 
 CV_CameraCalibration.py: Raspberry Pi program to get the camera calibration matrices by generating a ChArUco board, capturing a number of images of it,
 	and using computer vision techniques to detemine the optimal camera calibration matrices.
