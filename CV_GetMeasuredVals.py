@@ -1,12 +1,12 @@
 import math
 import numpy as np
 
-Z_dist = input("Z distance (in): ")
-X_dist = input("X distance (in): ")
+Z_dist = input("Z distance (ft): ")
+X_dist = input("X distance (ft): ")
 
-Z = float(Z_dist)
-Z = Z + 1.5 / 16
-X = float(X_dist)
+Z = float(Z_dist * 12)
+Z = Z #+ 1.5 / 16
+X = float(X_dist * 12)
 
 dist = math.sqrt(Z ** 2 + X ** 2)
 print("Distance = ", dist, "inches")
