@@ -106,20 +106,6 @@ KD = np.load('CV_CameraCalibrationMatrices.npz')
 K = KD['k']
 DIST_COEFFS = KD['dist']
 
-### Parameters from camera specs sheet
-##FOV = 62.2 # degrees
-##Cx = WIDTH / 2
-##Cy = HEIGHT / 2
-##F = 3.04 * 10 ** -3
-##S = 1.12 * 10 ** -6
-##Fx = F / S / 2
-##Fy = F / S / 2
-### Set camera intrinsic matrix
-##K = np.array([[Fx, 0, Cx],
-##              [0, Fy, Cy],
-##              [0, 0, 1]])
-##DIST_COEFFS = 0
-
 
 def detect_marker(img):
     # Detect Aruco markers, corners, and IDs
