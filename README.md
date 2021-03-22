@@ -36,4 +36,6 @@ CV_GetMeasuredVals.py: Raspberry Pi program to quickly and easliy calculate meas
 
 CV_ZeroAngleCalibration.py: Raspberry Pi program to get the calibrated zero angle for a given position of the camera. See the header within the file for details.
 
-CV_ZeroAngle.npz: Output file for 'CV_ZeroAngleCalibration.py'. Contains the calibrated zero angle for use as an input for 'ComputerVision.py'.
+CV_ZeroAngle.npz: Output file for 'CV_ZeroAngleCalibration.py'. Contains the calibrated zero angle for use as an input for 'ComputerVision.py'. 
+
+Motor Simulation and Implementation in Matlab_: Published Matlab simulations and block diagrams documenting and explaining the control system used for Demo 1. 
