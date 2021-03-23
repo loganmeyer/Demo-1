@@ -9,7 +9,7 @@ and determines the angle from the center line of the camera to the Aruco marker,
 and detects continuously. This portion also contains files to generate the camera calibration matrices for use in the main file, and optional zero angle calibration files
 to improve detected angle from a given camera position.
 
-Robot Movement:
+Robot Movement: The movement of the robot has two main components: its localization and its control system. The localization components use rotary encoders and an Arduino to provide the current relative location of the robot. This information on the current position is then passed to the control system. The control system translates this current position into necessary movements that the robot needs to make, based on the PID control system and a desired final position. This control system was created and simulated using Matlab prior to being implemented with the localization components in the Arduino code. 
 
 
 
